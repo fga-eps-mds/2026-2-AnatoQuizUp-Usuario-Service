@@ -77,7 +77,7 @@ export class UsuariosService {
 
 
   //Retorna o avatar do utilizador
-
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
   async obterMeuAvatar(usuarioId: string): Promise<AvatarUsuarioDto> {
     return {
       brainColor: 'pink',
