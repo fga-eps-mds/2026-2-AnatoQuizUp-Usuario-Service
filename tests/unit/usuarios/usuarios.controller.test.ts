@@ -3,7 +3,11 @@ import type { NextFunction, Request, Response } from "express";
 import { MENSAGENS } from "@/shared/constants/mensagens";
 import type { RespostaApiSucesso, RespostaPaginada } from "@/shared/types/api.types";
 
-import type { ResumoUsuarioDto, UsuarioPublicoDto } from "../../../src/modules/usuarios/dto/usuario.types";
+import type { 
+  ResumoUsuarioDto, 
+  UsuarioPublicoDto, 
+  AvatarUsuarioDto
+} from "../../../src/modules/usuarios/dto/usuario.types";
 import { UsuariosController } from "../../../src/modules/usuarios/usuarios.controller";
 import type { UsuariosService } from "../../../src/modules/usuarios/usuarios.service";
 
@@ -40,6 +44,7 @@ describe("UsuariosController", () => {
       buscarAlunos: jest.fn(),
       buscarUsuariosPorIds: jest.fn(),
       buscarPorIdPublico: jest.fn(),
+      obterMeuAvatar: jest.fn(),
     } as unknown as jest.Mocked<UsuariosService>;
     controller = new UsuariosController(service);
     jest.clearAllMocks();
@@ -129,6 +134,49 @@ describe("UsuariosController", () => {
     const { response } = criarResponseMock<RespostaApiSucesso<UsuarioPublicoDto>>();
 
     await controller.buscarPorIdPublico(request, response, next);
+
+    expect(next).toHaveBeenCalledWith(erro);
+  });
+
+  //Testes para a rota do Avatar
+
+  test("obterMeuAvatar responde com a configuracao do avatar do usuario", async () => {
+    const avatarMock: AvatarUsuarioDto = {
+      brainColor: "pink",
+      clothesId: null,
+      hairId: null,
+      accessoryId: null,
+    };
+    service.obterMeuAvatar.mockResolvedValue(avatarMock);
+
+    // Simulamos que o middleware de autenticação colocou o usuário na requisição
+    const request = {
+      usuario: { id: "usuario-123" },
+    } as unknown as Request;
+    
+    const { response, status, json } = criarResponseMock<RespostaApiSucesso<AvatarUsuarioDto>>();
+
+    await controller.obterMeuAvatar(request, response, next);
+
+    expect(service.obterMeuAvatar).toHaveBeenCalledWith("usuario-123");
+    expect(status).toHaveBeenCalledWith(200);
+    expect(json).toHaveBeenCalledWith({
+      mensagem: "Avatar recuperado com sucesso",
+      dados: avatarMock,
+    });
+  });
+
+  test("obterMeuAvatar encaminha erro do service para o middleware", async () => {
+    const erro = new Error("Erro ao buscar avatar");
+    service.obterMeuAvatar.mockRejectedValue(erro);
+
+    const request = {
+      usuario: { id: "usuario-123" },
+    } as unknown as Request;
+    
+    const { response } = criarResponseMock<RespostaApiSucesso<AvatarUsuarioDto>>();
+
+    await controller.obterMeuAvatar(request, response, next);
 
     expect(next).toHaveBeenCalledWith(erro);
   });

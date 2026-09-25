@@ -11,6 +11,7 @@ import type {
   BuscarUsuariosPorIdsQueryDto,
   ResumoUsuarioDto,
   UsuarioPublicoDto,
+  AvatarUsuarioDto, // <-- ADICIONADO: Importação do DTO do avatar
 } from "./dto/usuario.types";
 import type { UsuariosService } from "./usuarios.service";
 
@@ -111,6 +112,28 @@ export class UsuariosController {
       return response.status(200).json({
         mensagem: MENSAGENS.usuarioEncontrado,
         dados: usuario,
+      });
+    } catch (error) {
+      return next(error);
+    }
+  };
+
+  // Controller para obter o avatar do usuário logado
+
+  obterMeuAvatar = async (
+    request: Request,
+    response: Response<RespostaApiSucesso<AvatarUsuarioDto>>,
+    next: NextFunction,
+  ) => {
+    try {
+      // O middleware de autenticação garante que request.usuario existe nesta rota
+      const usuarioId = request.usuario!.id;
+
+      const avatar = await this.usuariosService.obterMeuAvatar(usuarioId);
+
+      return response.status(200).json({
+        mensagem: "Avatar recuperado com sucesso", 
+        dados: avatar,
       });
     } catch (error) {
       return next(error);

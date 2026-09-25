@@ -72,3 +72,12 @@ export function converterParaUsuarioPublico(usuario: {
     papel: converterPerfilParaPapel(usuario.perfil),
   };
 }
+
+
+//  Configuração do avatar do usuário
+export type AvatarUsuarioDto = {
+  brainColor: string;
+  clothesId: string | null;
+  hairId: string | null;
+  accessoryId: string | null;
+};
