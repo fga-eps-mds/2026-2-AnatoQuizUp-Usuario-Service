@@ -75,9 +75,8 @@ export class UsuariosService {
     return converterParaUsuarioPublico(usuario);
   }
 
-
   //Retorna o avatar do utilizador
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- usuarioId sera usado quando a atribuicao individual do avatar for implementada
   async obterMeuAvatar(usuarioId: string): Promise<AvatarUsuarioDto> {
     return {
       brainColor: 'pink',

@@ -43,12 +43,11 @@ usuariosRouter.get(
 // Acessivel a qualquer usuario autenticado (inclusive alunos).
 usuariosRouter.get("/visiveis", usuariosController.buscarVisiveis);
 
-
 // Rota do Avatar
 // IMPORTANTE: Fica antes do `/:id` para que "meu-avatar" não seja confundido com um ID de usuário.
 
 usuariosRouter.get(
-  "/meu-avatar", 
+  "/meu-avatar",
   usuariosController.obterMeuAvatar
 );
 

@@ -21,6 +21,7 @@ export const MENSAGENS = {
   usuarioNaoEncontrado: "Usuario nao encontrado.",
   usuarioEncontrado: "Usuario encontrado com sucesso.",
   usuariosEncontrados: "Usuarios encontrados com sucesso.",
+  avatarRecuperado: "Avatar recuperado com sucesso",
   usuarioStatusAlterado: "Status do usuario alterado com sucesso.",
   usuarioStatusInvalido: "A transicao de status solicitada nao e permitida.",
   usuarioAutoDesativacaoNaoPermitida: "Nao e permitido desativar o proprio usuario.",

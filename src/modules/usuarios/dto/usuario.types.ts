@@ -73,7 +73,6 @@ export function converterParaUsuarioPublico(usuario: {
   };
 }
 
-
 //  Configuração do avatar do usuário
 export type AvatarUsuarioDto = {
   brainColor: string;
