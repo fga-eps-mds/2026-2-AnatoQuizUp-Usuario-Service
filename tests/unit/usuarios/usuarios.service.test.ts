@@ -117,4 +117,21 @@ describe("UsuariosService", () => {
       expect(Object.keys(resposta).sort()).toEqual(["id", "nome", "papel"]);
     });
   });
+
+  test("obterMeuAvatar retorna o avatar padrao", async () => {
+    const resposta = await service.obterMeuAvatar("aluno-1");
+
+    expect(resposta).toEqual({
+      brainColor: "pink",
+      clothesId: null,
+      hairId: null,
+      accessoryId: null,
+    });
+    expect(Object.keys(resposta).sort()).toEqual([
+      "accessoryId",
+      "brainColor",
+      "clothesId",
+      "hairId",
+    ]);
+  });
 });

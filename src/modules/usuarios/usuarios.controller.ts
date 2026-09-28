@@ -2,6 +2,8 @@ import type { NextFunction, Request, Response } from "express";
 
 import { MENSAGENS } from "@/shared/constants/mensagens";
 import { PAPEIS } from "@/shared/constants/papeis";
+import { CodigoDeErro } from "@/shared/errors/codigos-de-erro";
+import { ErroAplicacao } from "@/shared/errors/erro-aplicacao";
 import type { RespostaApiSucesso, RespostaPaginada } from "@/shared/types/api.types";
 
 import type {
@@ -11,6 +13,7 @@ import type {
   BuscarUsuariosPorIdsQueryDto,
   ResumoUsuarioDto,
   UsuarioPublicoDto,
+  AvatarUsuarioDto,
 } from "./dto/usuario.types";
 import type { UsuariosService } from "./usuarios.service";
 
@@ -111,6 +114,34 @@ export class UsuariosController {
       return response.status(200).json({
         mensagem: MENSAGENS.usuarioEncontrado,
         dados: usuario,
+      });
+    } catch (error) {
+      return next(error);
+    }
+  };
+
+  // Controller para obter o avatar do usuário logado
+
+  obterMeuAvatar = async (
+    request: Request,
+    response: Response<RespostaApiSucesso<AvatarUsuarioDto>>,
+    next: NextFunction,
+  ) => {
+    try {
+      // Rota protegida: precisa de usuario autenticado.
+      if (!request.usuario) {
+        throw new ErroAplicacao({
+          codigoStatus: 401,
+          codigo: CodigoDeErro.TOKEN_INVALIDO,
+          mensagem: MENSAGENS.tokenInvalido,
+        });
+      }
+
+      const avatar = await this.usuariosService.obterMeuAvatar(request.usuario.id);
+
+      return response.status(200).json({
+        mensagem: MENSAGENS.avatarRecuperado,
+        dados: avatar,
       });
     } catch (error) {
       return next(error);
