@@ -75,14 +75,19 @@ export class UsuariosService {
     return converterParaUsuarioPublico(usuario);
   }
 
-  //Retorna o avatar do utilizador
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- usuarioId sera usado quando a atribuicao individual do avatar for implementada
   async obterMeuAvatar(usuarioId: string): Promise<AvatarUsuarioDto> {
-    return {
-      brainColor: 'pink',
-      clothesId: null,
-      hairId: null,
-      accessoryId: null,
-    };
+    const avatar = await this.usuariosRepository.buscarAvatar(usuarioId);
+    if (!avatar) {
+      throw new ErroAplicacao({ codigoStatus: 404, codigo: CodigoDeErro.NAO_ENCONTRADO, mensagem: MENSAGENS.usuarioNaoEncontrado });
+    }
+    return { corCerebro: avatar.corCerebro, cabelo: avatar.cabeloAvatar, acessorio: avatar.acessorioAvatar };
+  }
+
+  async salvarMeuAvatar(usuarioId: string, avatar: AvatarUsuarioDto): Promise<AvatarUsuarioDto> {
+    const resultado = await this.usuariosRepository.salvarAvatar(usuarioId, avatar);
+    if (resultado.count === 0) {
+      throw new ErroAplicacao({ codigoStatus: 404, codigo: CodigoDeErro.NAO_ENCONTRADO, mensagem: MENSAGENS.usuarioNaoEncontrado });
+    }
+    return avatar;
   }
 }

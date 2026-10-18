@@ -47,3 +47,12 @@ describe("schemas usuarios", () => {
     expect(() => schemaBuscarUsuarioPorId.parse({})).toThrow();
   });
 });
+import { schemaSalvarAvatar } from "../../../src/modules/usuarios/usuarios.schemas";
+
+describe("schemaSalvarAvatar", () => {
+  test("aceita apenas as opcoes disponiveis na interface", () => {
+    expect(schemaSalvarAvatar.safeParse({ corCerebro: "azul", cabelo: "loiro", acessorio: null }).success).toBe(true);
+    expect(schemaSalvarAvatar.safeParse({ corCerebro: "invalida", cabelo: null, acessorio: null }).success).toBe(false);
+    expect(schemaSalvarAvatar.safeParse({ corCerebro: "azul", cabelo: null, acessorio: null, usuarioId: "outro" }).success).toBe(false);
+  });
+});

@@ -24,6 +24,8 @@ describe("UsuariosService", () => {
       buscarAlunos: jest.fn(),
       buscarAlunosPorIds: jest.fn(),
       buscarPorIdPublico: jest.fn(),
+      buscarAvatar: jest.fn(),
+      salvarAvatar: jest.fn(),
     } as unknown as jest.Mocked<UsuariosRepository>;
     service = new UsuariosService(repository);
     jest.clearAllMocks();
@@ -118,20 +120,29 @@ describe("UsuariosService", () => {
     });
   });
 
-  test("obterMeuAvatar retorna o avatar padrao", async () => {
+  test("obterMeuAvatar retorna o avatar persistido", async () => {
+    repository.buscarAvatar.mockResolvedValue({ corCerebro: "azul", cabeloAvatar: "moicano", acessorioAvatar: null });
     const resposta = await service.obterMeuAvatar("aluno-1");
 
     expect(resposta).toEqual({
-      brainColor: "pink",
-      clothesId: null,
-      hairId: null,
-      accessoryId: null,
+      corCerebro: "azul",
+      cabelo: "moicano",
+      acessorio: null,
     });
-    expect(Object.keys(resposta).sort()).toEqual([
-      "accessoryId",
-      "brainColor",
-      "clothesId",
-      "hairId",
-    ]);
+    expect(repository.buscarAvatar).toHaveBeenCalledWith("aluno-1");
+  });
+
+  test("salvarMeuAvatar grava para o usuario autenticado", async () => {
+    const avatar = { corCerebro: "verde", cabelo: null, acessorio: "coroa" };
+    repository.salvarAvatar.mockResolvedValue({ count: 1 });
+    await expect(service.salvarMeuAvatar("aluno-1", avatar)).resolves.toEqual(avatar);
+    expect(repository.salvarAvatar).toHaveBeenCalledWith("aluno-1", avatar);
+  });
+
+  test("avatar ausente responde 404", async () => {
+    repository.buscarAvatar.mockResolvedValue(null);
+    repository.salvarAvatar.mockResolvedValue({ count: 0 });
+    await expect(service.obterMeuAvatar("inexistente")).rejects.toMatchObject({ codigoStatus: 404 });
+    await expect(service.salvarMeuAvatar("inexistente", { corCerebro: "rosa", cabelo: null, acessorio: null })).rejects.toMatchObject({ codigoStatus: 404 });
   });
 });

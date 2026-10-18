@@ -9,6 +9,7 @@ jest.mock("@/config/db", () => ({
       findMany: jest.fn(),
       findFirst: jest.fn(),
       count: jest.fn(),
+      updateMany: jest.fn(),
     },
   },
 }));
@@ -17,6 +18,7 @@ const transactionMock = prisma.$transaction as jest.Mock;
 const findManyMock = prisma.usuario.findMany as jest.Mock;
 const findFirstMock = prisma.usuario.findFirst as jest.Mock;
 const countMock = prisma.usuario.count as jest.Mock;
+const updateManyMock = prisma.usuario.updateMany as jest.Mock;
 
 const selectResumoUsuario = {
   id: true,
@@ -36,6 +38,25 @@ describe("UsuariosRepository", () => {
   beforeEach(() => {
     repository = new UsuariosRepository();
     jest.clearAllMocks();
+  });
+
+  test("salva a aparencia apenas no aluno ativo correspondente", async () => {
+    updateManyMock.mockResolvedValue({ count: 1 });
+    const avatar = { corCerebro: "roxo", cabelo: "cacheado", acessorio: "oculos" };
+    await expect(repository.salvarAvatar("aluno-1", avatar)).resolves.toEqual({ count: 1 });
+    expect(updateManyMock).toHaveBeenCalledWith({
+      where: { id: "aluno-1", perfil: "ALUNO", status: "ATIVO", excluidoEm: null },
+      data: { corCerebro: "roxo", cabeloAvatar: "cacheado", acessorioAvatar: "oculos" },
+    });
+  });
+
+  test("busca apenas os campos publicos do avatar", async () => {
+    findFirstMock.mockResolvedValue({ corCerebro: "rosa", cabeloAvatar: null, acessorioAvatar: null });
+    await repository.buscarAvatar("aluno-1");
+    expect(findFirstMock).toHaveBeenCalledWith({
+      where: { id: "aluno-1", perfil: "ALUNO", status: "ATIVO", excluidoEm: null },
+      select: { corCerebro: true, cabeloAvatar: true, acessorioAvatar: true },
+    });
   });
 
   test("buscarAlunos consulta alunos ativos com filtro textual e paginacao", async () => {

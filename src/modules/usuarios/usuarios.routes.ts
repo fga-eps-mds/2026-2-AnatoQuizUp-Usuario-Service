@@ -10,6 +10,7 @@ import {
   schemaBuscarAlunos,
   schemaBuscarUsuarioPorId,
   schemaBuscarUsuariosPorIds,
+  schemaSalvarAvatar,
 } from "./usuarios.schemas";
 import { UsuariosService } from "./usuarios.service";
 
@@ -23,6 +24,7 @@ const usuariosRouter = Router();
 
 // Guarda de papel para as rotas que so a gestao pode acessar.
 const apenasGestao = middlewarePapeis(PAPEIS.PROFESSOR, PAPEIS.ADMINISTRADOR);
+const apenasAluno = middlewarePapeis(PAPEIS.ALUNO);
 
 // Busca de alunos: restrita a gestao.
 usuariosRouter.get(
@@ -49,6 +51,19 @@ usuariosRouter.get("/visiveis", usuariosController.buscarVisiveis);
 usuariosRouter.get(
   "/meu-avatar",
   usuariosController.obterMeuAvatar
+);
+
+usuariosRouter.put(
+  "/meu-avatar",
+  apenasAluno,
+  validarRequisicao(schemaSalvarAvatar, "body"),
+  usuariosController.salvarMeuAvatar,
+);
+
+usuariosRouter.get(
+  "/:id/avatar",
+  validarRequisicao(schemaBuscarUsuarioPorId, "params"),
+  usuariosController.obterAvatarPorId,
 );
 
 // Busca publica por id: acessivel a qualquer papel autenticado.

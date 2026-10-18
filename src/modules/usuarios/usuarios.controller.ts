@@ -147,4 +147,33 @@ export class UsuariosController {
       return next(error);
     }
   };
+
+  obterAvatarPorId = async (
+    request: Request<BuscarUsuarioPorIdParamsDto>,
+    response: Response<RespostaApiSucesso<AvatarUsuarioDto>>,
+    next: NextFunction,
+  ) => {
+    try {
+      const avatar = await this.usuariosService.obterMeuAvatar(request.params.id);
+      return response.status(200).json({ mensagem: MENSAGENS.avatarRecuperado, dados: avatar });
+    } catch (error) {
+      return next(error);
+    }
+  };
+
+  salvarMeuAvatar = async (
+    request: Request<unknown, unknown, AvatarUsuarioDto>,
+    response: Response<RespostaApiSucesso<AvatarUsuarioDto>>,
+    next: NextFunction,
+  ) => {
+    try {
+      if (!request.usuario) {
+        throw new ErroAplicacao({ codigoStatus: 401, codigo: CodigoDeErro.TOKEN_INVALIDO, mensagem: MENSAGENS.tokenInvalido });
+      }
+      const avatar = await this.usuariosService.salvarMeuAvatar(request.usuario.id, request.body);
+      return response.status(200).json({ mensagem: MENSAGENS.avatarRecuperado, dados: avatar });
+    } catch (error) {
+      return next(error);
+    }
+  };
 }

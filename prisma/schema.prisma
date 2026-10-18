@@ -65,6 +65,9 @@ model Usuario {
   nacionalidade    String?
   dataNascimento   DateTime?
   nivelEducacional NivelEducacional?
+  corCerebro       String @default("rosa")
+  cabeloAvatar     String?
+  acessorioAvatar  String?
 
   departamento String?
   siape        String? @unique
