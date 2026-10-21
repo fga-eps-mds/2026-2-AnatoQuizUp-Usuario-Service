@@ -26,7 +26,15 @@ const usuariosRouter = Router();
 // Guarda de papel para as rotas que so a gestao pode acessar.
 const apenasGestao = middlewarePapeis(PAPEIS.PROFESSOR, PAPEIS.ADMINISTRADOR);
 const apenasAluno = middlewarePapeis(PAPEIS.ALUNO);
-const limiteSalvarAvatar = rateLimit({ windowMs: 60_000, limit: 30, standardHeaders: "draft-8", legacyHeaders: false });
+// A autenticacao global e apenasAluno rodam antes do limite. O ID evita que
+// alunos diferentes compartilhem a cota pelo IP da conexao do BFF.
+const limiteSalvarAvatar = rateLimit({
+  windowMs: 60_000,
+  limit: 30,
+  keyGenerator: (request) => request.usuario!.id,
+  standardHeaders: "draft-8",
+  legacyHeaders: false,
+});
 
 // Busca de alunos: restrita a gestao.
 usuariosRouter.get(
@@ -57,8 +65,8 @@ usuariosRouter.get(
 
 usuariosRouter.put(
   "/meu-avatar",
-  limiteSalvarAvatar,
   apenasAluno,
+  limiteSalvarAvatar,
   validarRequisicao(schemaSalvarAvatar, "body"),
   usuariosController.salvarMeuAvatar,
 );
