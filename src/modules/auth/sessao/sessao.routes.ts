@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { rateLimit } from "express-rate-limit";
 
 import { SessaoController } from "@/modules/auth/sessao/sessao.controller";
 import { SessaoRepository } from "@/modules/auth/sessao/sessao.repository";
@@ -18,9 +19,10 @@ const sessaoService = new SessaoService(sessaoRepository);
 const sessaoController = new SessaoController(sessaoService);
 
 const sessaoRouter = Router();
+const limiteLogin = rateLimit({ windowMs: 60_000, limit: 30, standardHeaders: "draft-8", legacyHeaders: false });
 
 // Publicas: validam o corpo e nao exigem autenticacao previa.
-sessaoRouter.post("/login", validarRequisicao(schemaLogin), sessaoController.login);
+sessaoRouter.post("/login", limiteLogin, validarRequisicao(schemaLogin), sessaoController.login);
 sessaoRouter.post(
   "/atualizar-token",
   validarRequisicao(schemaRefreshToken),
