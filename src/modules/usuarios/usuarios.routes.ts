@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { rateLimit } from "express-rate-limit";
 
 import { PAPEIS } from "@/shared/constants/papeis";
 import { middlewarePapeis } from "@/shared/middlewares/papeis.middleware";
@@ -25,6 +26,7 @@ const usuariosRouter = Router();
 // Guarda de papel para as rotas que so a gestao pode acessar.
 const apenasGestao = middlewarePapeis(PAPEIS.PROFESSOR, PAPEIS.ADMINISTRADOR);
 const apenasAluno = middlewarePapeis(PAPEIS.ALUNO);
+const limiteSalvarAvatar = rateLimit({ windowMs: 60_000, limit: 30, standardHeaders: "draft-8", legacyHeaders: false });
 
 // Busca de alunos: restrita a gestao.
 usuariosRouter.get(
@@ -55,6 +57,7 @@ usuariosRouter.get(
 
 usuariosRouter.put(
   "/meu-avatar",
+  limiteSalvarAvatar,
   apenasAluno,
   validarRequisicao(schemaSalvarAvatar, "body"),
   usuariosController.salvarMeuAvatar,
