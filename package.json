@@ -61,6 +61,7 @@
     "@babel/core": "^7.29.0",
     "@babel/preset-env": "^7.29.2",
     "@babel/preset-typescript": "^7.28.5",
+    "@casualbot/jest-sonar-reporter": "^2.7.1",
     "@eslint/js": "^9.38.0",
     "@types/bcryptjs": "^2.4.6",
     "@types/cors": "^2.8.19",
