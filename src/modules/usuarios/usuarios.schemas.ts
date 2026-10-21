@@ -28,3 +28,11 @@ export const schemaBuscarUsuariosPorIds = z.object({
 export const schemaBuscarUsuarioPorId = z.object({
   id: z.string().trim().min(1, "Id do usuario e obrigatorio"),
 });
+
+export const schemaSalvarAvatar = z.strictObject({
+  corCerebro: z.enum(["rosa", "roxo", "azul", "verde", "laranja", "amarelo"]),
+  cabelo: z.enum(["loiro", "cacheado", "moicano"]).nullable(),
+  acessorio: z.enum(["coroa", "oculos", "chapeu-formatura"]).nullable(),
+  luva: z.enum(["luva-boxe", "luva-cirurgica", "luva-la"]).nullable(),
+  calcado: z.enum(["sapato-plantao", "tenis-cano-alto", "tenis-esportivo"]).nullable(),
+});

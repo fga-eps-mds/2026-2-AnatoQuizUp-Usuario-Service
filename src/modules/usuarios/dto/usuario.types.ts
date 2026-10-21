@@ -73,10 +73,10 @@ export function converterParaUsuarioPublico(usuario: {
   };
 }
 
-//  Configuração do avatar do usuário
 export type AvatarUsuarioDto = {
-  brainColor: string;
-  clothesId: string | null;
-  hairId: string | null;
-  accessoryId: string | null;
+  corCerebro: string;
+  cabelo: string | null;
+  acessorio: string | null;
+  luva: string | null;
+  calcado: string | null;
 };

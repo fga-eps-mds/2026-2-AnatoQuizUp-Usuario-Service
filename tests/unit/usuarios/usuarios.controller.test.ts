@@ -45,6 +45,7 @@ describe("UsuariosController", () => {
       buscarUsuariosPorIds: jest.fn(),
       buscarPorIdPublico: jest.fn(),
       obterMeuAvatar: jest.fn(),
+      salvarMeuAvatar: jest.fn(),
     } as unknown as jest.Mocked<UsuariosService>;
     controller = new UsuariosController(service);
     jest.clearAllMocks();
@@ -142,10 +143,11 @@ describe("UsuariosController", () => {
 
   test("obterMeuAvatar responde com a configuracao do avatar do usuario", async () => {
     const avatarMock: AvatarUsuarioDto = {
-      brainColor: "pink",
-      clothesId: null,
-      hairId: null,
-      accessoryId: null,
+      corCerebro: "rosa",
+      cabelo: null,
+      acessorio: null,
+      luva: null,
+      calcado: null,
     };
     service.obterMeuAvatar.mockResolvedValue(avatarMock);
 
@@ -179,5 +181,27 @@ describe("UsuariosController", () => {
     await controller.obterMeuAvatar(request, response, next);
 
     expect(next).toHaveBeenCalledWith(erro);
+  });
+
+  test("salvarMeuAvatar usa a identidade autenticada", async () => {
+    const avatar = { corCerebro: "azul", cabelo: "loiro", acessorio: null, luva: "luva-boxe", calcado: "tenis-esportivo" };
+    service.salvarMeuAvatar.mockResolvedValue(avatar);
+    const request = { usuario: { id: "aluno-1" }, body: avatar } as unknown as Request;
+    const { response, status, json } = criarResponseMock<RespostaApiSucesso<AvatarUsuarioDto>>();
+
+    await controller.salvarMeuAvatar(request, response, next);
+
+    expect(service.salvarMeuAvatar).toHaveBeenCalledWith("aluno-1", avatar);
+    expect(status).toHaveBeenCalledWith(200);
+    expect(json).toHaveBeenCalledWith({ mensagem: MENSAGENS.avatarRecuperado, dados: avatar });
+  });
+
+  test("obterAvatarPorId lê a aparência do aluno solicitado", async () => {
+    const avatar = { corCerebro: "verde", cabelo: null, acessorio: "coroa", luva: null, calcado: "sapato-plantao" };
+    service.obterMeuAvatar.mockResolvedValue(avatar);
+    const request = { params: { id: "aluno-2" } } as unknown as Request<{ id: string }>;
+    const { response } = criarResponseMock<RespostaApiSucesso<AvatarUsuarioDto>>();
+    await controller.obterAvatarPorId(request, response, next);
+    expect(service.obterMeuAvatar).toHaveBeenCalledWith("aluno-2");
   });
 });
