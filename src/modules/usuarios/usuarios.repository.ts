@@ -22,14 +22,14 @@ export class UsuariosRepository {
   async buscarAvatar(id: string) {
     return prisma.usuario.findFirst({
       where: { id, perfil: "ALUNO", status: "ATIVO", excluidoEm: null },
-      select: { corCerebro: true, cabeloAvatar: true, acessorioAvatar: true },
+      select: { corCerebro: true, cabeloAvatar: true, acessorioAvatar: true, luvaAvatar: true, calcadoAvatar: true },
     });
   }
 
-  async salvarAvatar(id: string, avatar: { corCerebro: string; cabelo: string | null; acessorio: string | null }) {
+  async salvarAvatar(id: string, avatar: { corCerebro: string; cabelo: string | null; acessorio: string | null; luva: string | null; calcado: string | null }) {
     return prisma.usuario.updateMany({
       where: { id, perfil: "ALUNO", status: "ATIVO", excluidoEm: null },
-      data: { corCerebro: avatar.corCerebro, cabeloAvatar: avatar.cabelo, acessorioAvatar: avatar.acessorio },
+      data: { corCerebro: avatar.corCerebro, cabeloAvatar: avatar.cabelo, acessorioAvatar: avatar.acessorio, luvaAvatar: avatar.luva, calcadoAvatar: avatar.calcado },
     });
   }
 

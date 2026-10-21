@@ -51,8 +51,12 @@ import { schemaSalvarAvatar } from "../../../src/modules/usuarios/usuarios.schem
 
 describe("schemaSalvarAvatar", () => {
   test("aceita apenas as opcoes disponiveis na interface", () => {
-    expect(schemaSalvarAvatar.safeParse({ corCerebro: "azul", cabelo: "loiro", acessorio: null }).success).toBe(true);
-    expect(schemaSalvarAvatar.safeParse({ corCerebro: "invalida", cabelo: null, acessorio: null }).success).toBe(false);
-    expect(schemaSalvarAvatar.safeParse({ corCerebro: "azul", cabelo: null, acessorio: null, usuarioId: "outro" }).success).toBe(false);
+    const avatar = { corCerebro: "azul", cabelo: "loiro", acessorio: null, luva: "luva-la", calcado: "tenis-cano-alto" };
+    expect(schemaSalvarAvatar.safeParse(avatar).success).toBe(true);
+    expect(schemaSalvarAvatar.safeParse({ ...avatar, luva: null, calcado: null }).success).toBe(true);
+    expect(schemaSalvarAvatar.safeParse({ ...avatar, luva: "invalida" }).success).toBe(false);
+    expect(schemaSalvarAvatar.safeParse({ ...avatar, calcado: "invalido" }).success).toBe(false);
+    expect(schemaSalvarAvatar.safeParse({ ...avatar, corCerebro: "invalida" }).success).toBe(false);
+    expect(schemaSalvarAvatar.safeParse({ ...avatar, usuarioId: "outro" }).success).toBe(false);
   });
 });

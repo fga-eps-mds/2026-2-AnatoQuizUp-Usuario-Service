@@ -146,6 +146,8 @@ describe("UsuariosController", () => {
       corCerebro: "rosa",
       cabelo: null,
       acessorio: null,
+      luva: null,
+      calcado: null,
     };
     service.obterMeuAvatar.mockResolvedValue(avatarMock);
 
@@ -182,7 +184,7 @@ describe("UsuariosController", () => {
   });
 
   test("salvarMeuAvatar usa a identidade autenticada", async () => {
-    const avatar = { corCerebro: "azul", cabelo: "loiro", acessorio: null };
+    const avatar = { corCerebro: "azul", cabelo: "loiro", acessorio: null, luva: "luva-boxe", calcado: "tenis-esportivo" };
     service.salvarMeuAvatar.mockResolvedValue(avatar);
     const request = { usuario: { id: "aluno-1" }, body: avatar } as unknown as Request;
     const { response, status, json } = criarResponseMock<RespostaApiSucesso<AvatarUsuarioDto>>();
@@ -195,7 +197,7 @@ describe("UsuariosController", () => {
   });
 
   test("obterAvatarPorId lê a aparência do aluno solicitado", async () => {
-    const avatar = { corCerebro: "verde", cabelo: null, acessorio: "coroa" };
+    const avatar = { corCerebro: "verde", cabelo: null, acessorio: "coroa", luva: null, calcado: "sapato-plantao" };
     service.obterMeuAvatar.mockResolvedValue(avatar);
     const request = { params: { id: "aluno-2" } } as unknown as Request<{ id: string }>;
     const { response } = criarResponseMock<RespostaApiSucesso<AvatarUsuarioDto>>();

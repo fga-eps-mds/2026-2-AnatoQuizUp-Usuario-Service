@@ -42,20 +42,20 @@ describe("UsuariosRepository", () => {
 
   test("salva a aparencia apenas no aluno ativo correspondente", async () => {
     updateManyMock.mockResolvedValue({ count: 1 });
-    const avatar = { corCerebro: "roxo", cabelo: "cacheado", acessorio: "oculos" };
+    const avatar = { corCerebro: "roxo", cabelo: "cacheado", acessorio: "oculos", luva: "luva-cirurgica", calcado: "tenis-cano-alto" };
     await expect(repository.salvarAvatar("aluno-1", avatar)).resolves.toEqual({ count: 1 });
     expect(updateManyMock).toHaveBeenCalledWith({
       where: { id: "aluno-1", perfil: "ALUNO", status: "ATIVO", excluidoEm: null },
-      data: { corCerebro: "roxo", cabeloAvatar: "cacheado", acessorioAvatar: "oculos" },
+      data: { corCerebro: "roxo", cabeloAvatar: "cacheado", acessorioAvatar: "oculos", luvaAvatar: "luva-cirurgica", calcadoAvatar: "tenis-cano-alto" },
     });
   });
 
   test("busca apenas os campos publicos do avatar", async () => {
-    findFirstMock.mockResolvedValue({ corCerebro: "rosa", cabeloAvatar: null, acessorioAvatar: null });
+    findFirstMock.mockResolvedValue({ corCerebro: "rosa", cabeloAvatar: null, acessorioAvatar: null, luvaAvatar: null, calcadoAvatar: null });
     await repository.buscarAvatar("aluno-1");
     expect(findFirstMock).toHaveBeenCalledWith({
       where: { id: "aluno-1", perfil: "ALUNO", status: "ATIVO", excluidoEm: null },
-      select: { corCerebro: true, cabeloAvatar: true, acessorioAvatar: true },
+      select: { corCerebro: true, cabeloAvatar: true, acessorioAvatar: true, luvaAvatar: true, calcadoAvatar: true },
     });
   });
 

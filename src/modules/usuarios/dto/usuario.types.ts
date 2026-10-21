@@ -77,4 +77,6 @@ export type AvatarUsuarioDto = {
   corCerebro: string;
   cabelo: string | null;
   acessorio: string | null;
+  luva: string | null;
+  calcado: string | null;
 };

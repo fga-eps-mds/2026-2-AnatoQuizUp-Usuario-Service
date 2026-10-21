@@ -68,6 +68,8 @@ model Usuario {
   corCerebro       String @default("rosa")
   cabeloAvatar     String?
   acessorioAvatar  String?
+  luvaAvatar       String?
+  calcadoAvatar    String?
 
   departamento String?
   siape        String? @unique

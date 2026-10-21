@@ -80,7 +80,7 @@ export class UsuariosService {
     if (!avatar) {
       throw new ErroAplicacao({ codigoStatus: 404, codigo: CodigoDeErro.NAO_ENCONTRADO, mensagem: MENSAGENS.usuarioNaoEncontrado });
     }
-    return { corCerebro: avatar.corCerebro, cabelo: avatar.cabeloAvatar, acessorio: avatar.acessorioAvatar };
+    return { corCerebro: avatar.corCerebro, cabelo: avatar.cabeloAvatar, acessorio: avatar.acessorioAvatar, luva: avatar.luvaAvatar, calcado: avatar.calcadoAvatar };
   }
 
   async salvarMeuAvatar(usuarioId: string, avatar: AvatarUsuarioDto): Promise<AvatarUsuarioDto> {

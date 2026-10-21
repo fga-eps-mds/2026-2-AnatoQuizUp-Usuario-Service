@@ -97,6 +97,15 @@ jobs:
           ] | length' codeql-results/*.sarif)
           echo "Achados CodeQL High/Critical: $ACHADOS"
           if [ "$ACHADOS" -gt 0 ]; then
+            jq -s -r '
+              .[].runs[] | . as $run
+              | ([($run.tool.driver.rules // [])[]] + [($run.tool.extensions // [])[] | (.rules // [])[]])
+              | map({key: .id, value: ((.properties["security-severity"] // "0") | tonumber)})
+              | from_entries as $sev
+              | ($run.results // [])[]
+              | select(($sev[.ruleId] // 0) >= 7.0)
+              | "::error file=\(.locations[0].physicalLocation.artifactLocation.uri // "unknown"),line=\(.locations[0].physicalLocation.region.startLine // 1)::CodeQL \(.ruleId): \(.message.text // "achado de segurança")"
+            ' codeql-results/*.sarif
             echo "::error::CodeQL encontrou $ACHADOS achado(s) High/Critical."
             exit 1
           fi
