@@ -6,7 +6,7 @@
   "main": "dist/src/server.js",
   "scripts": {
     "dev": "tsx watch -r tsconfig-paths/register src/server.ts",
-    "build": "tsc --project tsconfig.build.json && tsc-alias -p tsconfig.build.json",
+    "build": "tsc --project tsconfig.build.json && node scripts/resolve-aliases.mjs",
     "start": "npx prisma migrate deploy && node dist/src/server.js",
     "lint": "eslint . --ext .ts",
     "test": "jest",
@@ -76,10 +76,15 @@
     "prisma": "^6.17.1",
     "supertest": "^7.2.2",
     "ts-jest": "^29.4.9",
-    "tsc-alias": "^1.8.16",
     "tsconfig-paths": "^4.2.0",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.46.1"
+    "typescript-eslint": "^8.46.1",
+    "@casualbot/jest-sonar-reporter": "^2.7.1"
+  },
+  "overrides": {
+    "@prisma/config": {
+      "deepmerge-ts": "8.0.2"
+    }
   }
 }

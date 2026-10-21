@@ -14,3 +14,10 @@ npm-debug.log*
 .DS_Store
 .vscode/
 .idea/
+
+# Relatórios gerados pelos testes e pela coleta de métricas.
+sonar-report.xml
+.scannerwork/
+__pycache__/
+*.py[cod]
+analytics-raw-data/
