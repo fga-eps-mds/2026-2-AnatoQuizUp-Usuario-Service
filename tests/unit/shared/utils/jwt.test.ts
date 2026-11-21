@@ -80,4 +80,22 @@ describe("Testa utilitários JTW", () => {
       expect(erro_tipado.message).toBe("Token expirado");
     }
   });
+
+  test("Lança erro genérico quando a verificação falha por um motivo inesperado", () => {
+    const token = jwt.sign(payload_autenticacao, jwtSecretKey);
+    const falhaInesperada = new Error("falha inesperada da lib");
+    const verifySpy = jest.spyOn(jwt, "verify").mockImplementation(() => {
+      throw falhaInesperada;
+    });
+
+    try {
+      verificarTokenJwt(token, jwtSecretKey);
+      throw new Error("verificarTokenJwt deveria ter lançado um erro");
+    } catch (erro: unknown) {
+      const erro_tipado = erro as Error;
+      expect(erro_tipado.message).toBe("Falha na verificação do token");
+    } finally {
+      verifySpy.mockRestore();
+    }
+  });
 });

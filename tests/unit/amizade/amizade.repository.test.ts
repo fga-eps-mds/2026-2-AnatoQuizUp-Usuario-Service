@@ -226,6 +226,21 @@ describe("AmizadesRepository", () => {
   });
 
   describe("listarConvites", () => {
+    test("usa 'recebidos' como seletor padrao quando nao informado", async () => {
+      transactionMock.mockResolvedValue([[], 0]);
+
+      await repository.listarConvites("u1", { skip: 0, limit: 10, page: 1 });
+
+      expect(prisma.amizade.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            usuarioDestinoId: "u1",
+            statusAmizade: "PENDENTE",
+          }),
+        }),
+      );
+    });
+
     test("deve listar convites recebidos", async () => {
       transactionMock.mockResolvedValue([[], 0]);
 

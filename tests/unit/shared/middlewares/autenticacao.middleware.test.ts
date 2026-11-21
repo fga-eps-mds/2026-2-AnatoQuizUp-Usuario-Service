@@ -115,6 +115,30 @@ describe("middlewareAutenticacao", () => {
     expect(next).toHaveBeenCalledTimes(1);
   });
 
+  test("normaliza /api/v1 sem sufixo para a raiz e nao trata como rota publica", async () => {
+    request.originalUrl = "/api/v1";
+    const token = gerarTokenDeAcesso(gerarPayloadAutenticacao());
+    request.headers = { authorization: `Bearer ${token}` };
+    findUniqueMock.mockResolvedValue(gerarUsuarioBanco(STATUS.ATIVO));
+
+    await executarMiddleware();
+
+    expect(findUniqueMock).toHaveBeenCalled();
+    expect(next).toHaveBeenCalledTimes(1);
+  });
+
+  test("trata originalUrl/url ausentes como caminho vazio e segue autenticando normalmente", async () => {
+    request.originalUrl = undefined as unknown as string;
+    request.url = undefined as unknown as string;
+    const token = gerarTokenDeAcesso(gerarPayloadAutenticacao());
+    request.headers = { authorization: `Bearer ${token}` };
+    findUniqueMock.mockResolvedValue(gerarUsuarioBanco(STATUS.ATIVO));
+
+    await executarMiddleware();
+
+    expect(next).toHaveBeenCalledTimes(1);
+  });
+
   test("retorna 401 quando token nao e fornecido", async () => {
     await expect(executarMiddleware()).rejects.toMatchObject<Partial<ErroAplicacao>>({
       message: "Token não fornecido",
