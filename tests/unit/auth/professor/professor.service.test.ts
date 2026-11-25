@@ -55,6 +55,14 @@ function criarErroCampoUnicoComTargetTexto(campo: string) {
   });
 }
 
+function criarErroCampoUnicoSemTarget() {
+  return new Prisma.PrismaClientKnownRequestError("Unique constraint failed", {
+    code: "P2002",
+    clientVersion: "6.17.1",
+    meta: {},
+  });
+}
+
 function criarErroPrisma(code: string, meta?: Record<string, unknown>) {
   return new Prisma.PrismaClientKnownRequestError("Prisma request failed", {
     code,
@@ -204,6 +212,24 @@ describe("ProfessorAuthService", () => {
       codigoStatus: 409,
       message: MENSAGENS.siapeJaCadastrado,
     } satisfies Partial<ErroAplicacao>);
+  });
+
+  test("repassa erro P2002 sem target no meta (nao reconhece duplicidade)", async () => {
+    const erro = criarErroCampoUnicoSemTarget();
+    professorAuthRepository.buscarPorEmail.mockResolvedValue(null);
+    professorAuthRepository.buscarPorSiape.mockResolvedValue(null);
+    professorAuthRepository.criar.mockRejectedValue(erro);
+
+    await expect(service.registrar(inputValido)).rejects.toBe(erro);
+  });
+
+  test("repassa erro P2010 sem mensagem no meta (nao reconhece duplicidade)", async () => {
+    const erro = criarErroPrisma("P2010", { code: "23505" });
+    professorAuthRepository.buscarPorEmail.mockResolvedValue(null);
+    professorAuthRepository.buscarPorSiape.mockResolvedValue(null);
+    professorAuthRepository.criar.mockRejectedValue(erro);
+
+    await expect(service.registrar(inputValido)).rejects.toBe(erro);
   });
 
   test("repassa erro Prisma sem conflito conhecido", async () => {

@@ -121,6 +121,25 @@ describe("AmizadesService", () => {
         totalPages: 1,
       });
     });
+
+    test("usa o usuarioOrigem como amigo quando o usuario logado e o destino", async () => {
+      repository.listarAmigos.mockResolvedValue({
+        total: 1,
+        data: [
+          {
+            ...criarAmizade(),
+            usuarioOrigem: criarResumoUsuario("origem-id"),
+            usuarioDestino: criarResumoUsuario("destino-id"),
+          },
+        ],
+      });
+
+      const resultado = await service.listarAmigos({}, "destino-id");
+
+      expect(resultado.dados[0]).toMatchObject({
+        amigo: expect.objectContaining({ id: "origem-id" }),
+      });
+    });
   });
 
   describe("buscarAmigos", () => {
@@ -343,6 +362,18 @@ describe("AmizadesService", () => {
   });
 
   describe("listarConvites", () => {
+    test("deve lançar erro quando usuário não informado", async () => {
+      await expect(
+        service.listarConvites({}, "/convites/recebidos", undefined),
+      ).rejects.toMatchObject({
+        codigoStatus: 401,
+        codigo: CodigoDeErro.NAO_AUTORIZADO,
+        message: MENSAGENS.usuarioAutenticadoEncontrado,
+      });
+
+      expect(repository.listarConvites).not.toHaveBeenCalled();
+    });
+
     test("deve listar convites recebidos", async () => {
       repository.listarConvites.mockResolvedValue({
         total: 1,
@@ -477,6 +508,26 @@ describe("AmizadesService", () => {
   });
 
   describe("desfazerAmizade", () => {
+    test("deve lançar erro quando usuário não informado", async () => {
+      await expect(service.desfazerAmizade({ id: "1" }, undefined)).rejects.toMatchObject({
+        codigoStatus: 401,
+        codigo: CodigoDeErro.NAO_AUTORIZADO,
+        message: MENSAGENS.usuarioAutenticadoEncontrado,
+      });
+
+      expect(repository.buscarPorSolicitacaoId).not.toHaveBeenCalled();
+    });
+
+    test("deve lançar erro quando amizade não informada", async () => {
+      await expect(service.desfazerAmizade({ id: "" }, "usuario-id")).rejects.toMatchObject({
+        codigoStatus: 401,
+        codigo: CodigoDeErro.REQUISICAO_INVALIDA,
+        message: MENSAGENS.fornecaUmaSolicitacao,
+      });
+
+      expect(repository.buscarPorSolicitacaoId).not.toHaveBeenCalled();
+    });
+
     test("deve lançar erro quando amizade não é ativa", async () => {
       repository.buscarPorSolicitacaoId.mockResolvedValue(criarAmizade("RECUSADO"));
 

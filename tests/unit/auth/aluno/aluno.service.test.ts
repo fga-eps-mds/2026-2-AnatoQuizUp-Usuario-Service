@@ -72,6 +72,30 @@ function criarErroPrismaCampoUnico(campo: "email" | "nickname") {
   });
 }
 
+function criarErroPrismaCampoUnicoComTargetString(campo: "email" | "nickname") {
+  return new Prisma.PrismaClientKnownRequestError("Unique constraint failed", {
+    code: "P2002",
+    clientVersion: "test",
+    meta: { target: campo },
+  });
+}
+
+function criarErroPrismaCampoUnicoSemTarget() {
+  return new Prisma.PrismaClientKnownRequestError("Unique constraint failed", {
+    code: "P2002",
+    clientVersion: "test",
+    meta: {},
+  });
+}
+
+function criarErroPrismaCampoUnicoPorIndiceSemMensagem() {
+  return new Prisma.PrismaClientKnownRequestError("Raw query unique constraint failed", {
+    code: "P2010",
+    clientVersion: "test",
+    meta: { code: "23505" },
+  });
+}
+
 function criarErroPrismaCampoUnicoPorIndice(campo: "email" | "nickname") {
   return new Prisma.PrismaClientKnownRequestError("Raw query unique constraint failed", {
     code: "P2010",
@@ -299,6 +323,49 @@ describe("AlunoAuthService", () => {
       message: MENSAGENS.emailJaCadastrado,
       detalhes: { email: "joao.junior@aluno.unb.br" },
     });
+  });
+
+  it("converte conflito unico de email quando o target do prisma nao e um array", async () => {
+    const { alunoAuthRepository, criar } = criarAlunoAuthRepositoryMock();
+    criar.mockRejectedValue(criarErroPrismaCampoUnicoComTargetString("email"));
+    const service = new AlunoAuthService(alunoAuthRepository);
+
+    await expect(service.registrar(criarInputRegistroValido())).rejects.toMatchObject({
+      codigoStatus: 409,
+      codigo: CodigoDeErro.CONFLITO,
+      message: MENSAGENS.emailJaCadastrado,
+      detalhes: { email: "joao.junior@aluno.unb.br" },
+    });
+  });
+
+  it("propaga erro P2002 sem target no meta (nao reconhece duplicidade)", async () => {
+    const { alunoAuthRepository, criar } = criarAlunoAuthRepositoryMock();
+    const erro = criarErroPrismaCampoUnicoSemTarget();
+    criar.mockRejectedValue(erro);
+    const service = new AlunoAuthService(alunoAuthRepository);
+
+    await expect(service.registrar(criarInputRegistroValido())).rejects.toBe(erro);
+  });
+
+  it("propaga erro P2010 sem mensagem no meta (nao reconhece duplicidade)", async () => {
+    const { alunoAuthRepository, criar } = criarAlunoAuthRepositoryMock();
+    const erro = criarErroPrismaCampoUnicoPorIndiceSemMensagem();
+    criar.mockRejectedValue(erro);
+    const service = new AlunoAuthService(alunoAuthRepository);
+
+    await expect(service.registrar(criarInputRegistroValido())).rejects.toBe(erro);
+  });
+
+  it("propaga erro prisma que nao e de unicidade (nem P2002 nem P2010)", async () => {
+    const { alunoAuthRepository, criar } = criarAlunoAuthRepositoryMock();
+    const erro = new Prisma.PrismaClientKnownRequestError("Foreign key constraint failed", {
+      code: "P2003",
+      clientVersion: "test",
+    });
+    criar.mockRejectedValue(erro);
+    const service = new AlunoAuthService(alunoAuthRepository);
+
+    await expect(service.registrar(criarInputRegistroValido())).rejects.toBe(erro);
   });
 
   it("converte conflito unico de nickname do banco em erro 409", async () => {

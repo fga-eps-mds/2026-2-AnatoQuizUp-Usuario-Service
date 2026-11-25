@@ -70,6 +70,20 @@ describe("UsuariosController", () => {
     expect(json).toHaveBeenCalledWith(resposta);
   });
 
+  test("buscarAlunos encaminha erro do service para o middleware", async () => {
+    const erro = new Error("falha");
+    service.buscarAlunos.mockRejectedValue(erro);
+
+    const request = {
+      query: { page: 1, limit: 10 },
+    } as unknown as Request;
+    const { response } = criarResponseMock<RespostaPaginada<ResumoUsuarioDto>>();
+
+    await controller.buscarAlunos(request, response, next);
+
+    expect(next).toHaveBeenCalledWith(erro);
+  });
+
   test("buscarPorIds responde com mensagem e dados", async () => {
     service.buscarUsuariosPorIds.mockResolvedValue([alunoResumo]);
 
@@ -179,6 +193,57 @@ describe("UsuariosController", () => {
     const { response } = criarResponseMock<RespostaApiSucesso<AvatarUsuarioDto>>();
 
     await controller.obterMeuAvatar(request, response, next);
+
+    expect(next).toHaveBeenCalledWith(erro);
+  });
+
+  test("obterMeuAvatar rejeita sem usuario autenticado", async () => {
+    const request = {} as unknown as Request;
+    const { response } = criarResponseMock<RespostaApiSucesso<AvatarUsuarioDto>>();
+
+    await controller.obterMeuAvatar(request, response, next);
+
+    expect(service.obterMeuAvatar).not.toHaveBeenCalled();
+    expect(next).toHaveBeenCalledWith(
+      expect.objectContaining({ codigoStatus: 401, message: MENSAGENS.tokenInvalido }),
+    );
+  });
+
+  test("obterAvatarPorId encaminha erro do service para o middleware", async () => {
+    const erro = new Error("falha");
+    service.obterMeuAvatar.mockRejectedValue(erro);
+
+    const request = { params: { id: "aluno-2" } } as unknown as Request<{ id: string }>;
+    const { response } = criarResponseMock<RespostaApiSucesso<AvatarUsuarioDto>>();
+
+    await controller.obterAvatarPorId(request, response, next);
+
+    expect(next).toHaveBeenCalledWith(erro);
+  });
+
+  test("salvarMeuAvatar rejeita sem usuario autenticado", async () => {
+    const avatar = { corCerebro: "azul", cabelo: null, acessorio: null, luva: null, calcado: null };
+    const request = { body: avatar } as unknown as Request;
+    const { response } = criarResponseMock<RespostaApiSucesso<AvatarUsuarioDto>>();
+
+    await controller.salvarMeuAvatar(request, response, next);
+
+    expect(service.salvarMeuAvatar).not.toHaveBeenCalled();
+    expect(next).toHaveBeenCalledWith(
+      expect.objectContaining({ codigoStatus: 401, message: MENSAGENS.tokenInvalido }),
+    );
+  });
+
+  test("salvarMeuAvatar encaminha erro do service para o middleware", async () => {
+    const erro = new Error("falha");
+    service.salvarMeuAvatar.mockRejectedValue(erro);
+    const request = {
+      usuario: { id: "aluno-1" },
+      body: { corCerebro: "azul", cabelo: null, acessorio: null, luva: null, calcado: null },
+    } as unknown as Request;
+    const { response } = criarResponseMock<RespostaApiSucesso<AvatarUsuarioDto>>();
+
+    await controller.salvarMeuAvatar(request, response, next);
 
     expect(next).toHaveBeenCalledWith(erro);
   });
