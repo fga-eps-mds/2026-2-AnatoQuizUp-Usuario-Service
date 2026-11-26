@@ -82,5 +82,21 @@ export const schemaSalvarAvatar = z.strictObject({
     "luva-goleiro",
     ])
     .nullable(),
-  calcado: z.enum(["sapato-plantao", "tenis-cano-alto", "tenis-esportivo"]).nullable(),
+  calcado: z
+    .enum([
+    "sapato-plantao",
+    "tenis-cano-alto",
+    "tenis-esportivo",
+    "tenis-esportivo-vermelho",
+    "tenis-esportivo-verde",
+    "tenis-esportivo-amarelo",
+    "tenis-esportivo-preto",
+    "tenis-cano-alto-azul",
+    "tenis-cano-alto-verde",
+    "tenis-cano-alto-amarelo",
+    "tenis-cano-alto-preto",
+    "tenis-skate",
+    "bota-coturno",
+    ])
+    .nullable(),
 });
