@@ -65,6 +65,22 @@ export const schemaSalvarAvatar = z.strictObject({
     "chapeu-cowboy",
     ])
     .nullable(),
-  luva: z.enum(["luva-boxe", "luva-cirurgica", "luva-la"]).nullable(),
+  luva: z
+    .enum([
+    "luva-boxe",
+    "luva-cirurgica",
+    "luva-la",
+    "luva-boxe-azul",
+    "luva-boxe-verde",
+    "luva-boxe-dourado",
+    "luva-boxe-roxo",
+    "luva-boxe-preta",
+    "luva-la-rosa",
+    "luva-la-verde",
+    "luva-la-azul",
+    "luva-jardinagem",
+    "luva-goleiro",
+    ])
+    .nullable(),
   calcado: z.enum(["sapato-plantao", "tenis-cano-alto", "tenis-esportivo"]).nullable(),
 });
