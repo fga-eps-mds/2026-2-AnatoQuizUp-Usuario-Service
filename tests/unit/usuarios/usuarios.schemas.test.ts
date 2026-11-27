@@ -60,3 +60,52 @@ describe("schemaSalvarAvatar", () => {
     expect(schemaSalvarAvatar.safeParse({ ...avatar, usuarioId: "outro" }).success).toBe(false);
   });
 });
+
+describe("schemaSalvarAvatar - itens novos da loja", () => {
+  const base = { corCerebro: "rosa", cabelo: null, acessorio: null, luva: null, calcado: null };
+
+  test.each([
+    "loiro-castanho", "loiro-ruivo", "cacheado-loiro", "cacheado-castanho", "moicano-loiro",
+    "moicano-ruivo", "curto-cacheado", "trancas", "curto-grisalho", "curto-cacheado-loiro",
+  ])("aceita o cabelo novo %s", (cabelo) => {
+    expect(schemaSalvarAvatar.safeParse({ ...base, cabelo }).success).toBe(true);
+  });
+
+  test.each([
+    "bone", "tiara", "oculos-sol", "chapeu-festa", "capacete",
+    "chapeu-mago", "chapeu-chef", "chapeu-palha", "mascara-carnaval", "chapeu-cowboy",
+  ])("aceita o acessorio novo %s", (acessorio) => {
+    expect(schemaSalvarAvatar.safeParse({ ...base, acessorio }).success).toBe(true);
+  });
+
+  test.each([
+    "luva-boxe-azul", "luva-boxe-verde", "luva-boxe-dourado", "luva-boxe-roxo", "luva-boxe-preta",
+    "luva-la-rosa", "luva-la-verde", "luva-la-azul", "luva-jardinagem", "luva-goleiro",
+  ])("aceita a luva nova %s", (luva) => {
+    expect(schemaSalvarAvatar.safeParse({ ...base, luva }).success).toBe(true);
+  });
+
+  test.each([
+    "tenis-esportivo-vermelho", "tenis-esportivo-verde", "tenis-esportivo-amarelo", "tenis-esportivo-preto",
+    "tenis-cano-alto-azul", "tenis-cano-alto-verde", "tenis-cano-alto-amarelo", "tenis-cano-alto-preto",
+    "tenis-skate", "bota-coturno",
+  ])("aceita o calcado novo %s", (calcado) => {
+    expect(schemaSalvarAvatar.safeParse({ ...base, calcado }).success).toBe(true);
+  });
+
+  test("aceita os quatro slots novos equipados ao mesmo tempo", () => {
+    const avatar = {
+      corCerebro: "verde",
+      cabelo: "trancas",
+      acessorio: "chapeu-cowboy",
+      luva: "luva-goleiro",
+      calcado: "bota-coturno",
+    };
+    expect(schemaSalvarAvatar.parse(avatar)).toEqual(avatar);
+  });
+
+  test("continua recusando item que nao existe em nenhum tipo", () => {
+    expect(schemaSalvarAvatar.safeParse({ ...base, cabelo: "bone" }).success).toBe(false);
+    expect(schemaSalvarAvatar.safeParse({ ...base, acessorio: "luva-goleiro" }).success).toBe(false);
+  });
+});

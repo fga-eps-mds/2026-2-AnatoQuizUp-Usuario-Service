@@ -31,8 +31,72 @@ export const schemaBuscarUsuarioPorId = z.object({
 
 export const schemaSalvarAvatar = z.strictObject({
   corCerebro: z.enum(["rosa", "roxo", "azul", "verde", "laranja", "amarelo"]),
-  cabelo: z.enum(["loiro", "cacheado", "moicano"]).nullable(),
-  acessorio: z.enum(["coroa", "oculos", "chapeu-formatura"]).nullable(),
-  luva: z.enum(["luva-boxe", "luva-cirurgica", "luva-la"]).nullable(),
-  calcado: z.enum(["sapato-plantao", "tenis-cano-alto", "tenis-esportivo"]).nullable(),
+  cabelo: z
+    .enum([
+    "loiro",
+    "cacheado",
+    "moicano",
+    "loiro-castanho",
+    "loiro-ruivo",
+    "cacheado-loiro",
+    "cacheado-castanho",
+    "moicano-loiro",
+    "moicano-ruivo",
+    "curto-cacheado",
+    "trancas",
+    "curto-grisalho",
+    "curto-cacheado-loiro",
+    ])
+    .nullable(),
+  acessorio: z
+    .enum([
+    "coroa",
+    "oculos",
+    "chapeu-formatura",
+    "bone",
+    "tiara",
+    "oculos-sol",
+    "chapeu-festa",
+    "capacete",
+    "chapeu-mago",
+    "chapeu-chef",
+    "chapeu-palha",
+    "mascara-carnaval",
+    "chapeu-cowboy",
+    ])
+    .nullable(),
+  luva: z
+    .enum([
+    "luva-boxe",
+    "luva-cirurgica",
+    "luva-la",
+    "luva-boxe-azul",
+    "luva-boxe-verde",
+    "luva-boxe-dourado",
+    "luva-boxe-roxo",
+    "luva-boxe-preta",
+    "luva-la-rosa",
+    "luva-la-verde",
+    "luva-la-azul",
+    "luva-jardinagem",
+    "luva-goleiro",
+    ])
+    .nullable(),
+  calcado: z
+    .enum([
+    "sapato-plantao",
+    "tenis-cano-alto",
+    "tenis-esportivo",
+    "tenis-esportivo-vermelho",
+    "tenis-esportivo-verde",
+    "tenis-esportivo-amarelo",
+    "tenis-esportivo-preto",
+    "tenis-cano-alto-azul",
+    "tenis-cano-alto-verde",
+    "tenis-cano-alto-amarelo",
+    "tenis-cano-alto-preto",
+    "tenis-skate",
+    "bota-coturno",
+    ])
+    .nullable(),
 });
